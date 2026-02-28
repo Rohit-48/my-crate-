@@ -1,6 +1,6 @@
 # NixOS Dev Environment Setup
 
-Getting the full `obsidian-publish` dev environment running on NixOS — Rust, Node, Bun, SQLite, and Rust Rover configured correctly.
+Getting the full `obsidian-publish` dev environment running on NixOS - Rust, Node, Bun, SQLite, and Rust Rover configured correctly.
 
 ---
 
@@ -8,7 +8,7 @@ Getting the full `obsidian-publish` dev environment running on NixOS — Rust, N
 
 On a standard Linux distro, you install Rust via `rustup`, Node via `nvm`, and libraries like OpenSSL land in `/usr/lib`. Tools like Rust Rover find everything automatically because paths are predictable.
 
-NixOS doesn't work that way. There is no `/usr/lib`. Every package lives in `/nix/store/some-hash-package-version/`. Nothing is global. This is what makes NixOS reproducible — but it also means your editor, your Rust build scripts, and your IDE all need to be told explicitly where things are.
+NixOS doesn't work that way. There is no `/usr/lib`. Every package lives in `/nix/store/some-hash-package-version/`. Nothing is global. This is what makes NixOS reproducible - but it also means your editor, your Rust build scripts, and your IDE all need to be told explicitly where things are.
 
 The solution is a `flake.nix` that defines the entire dev environment, and `direnv` to activate it automatically when you enter the project folder.
 
@@ -40,7 +40,7 @@ sudo nixos-rebuild switch
 git clone git@github.com:yourname/obsidian-publish.git
 cd obsidian-publish
 direnv allow       # activates the dev shell automatically
-cargo --version    # should print cargo version — environment is live
+cargo --version    # should print cargo version - environment is live
 ```
 
 ---
@@ -61,7 +61,7 @@ obsidian-publish/
 
 ## Setting up from scratch
 
-### Step 1 — Initialize the repo
+### Step 1 - Initialize the repo
 
 ```bash
 mkdir obsidian-publish
@@ -69,7 +69,7 @@ cd obsidian-publish
 git init
 ```
 
-### Step 2 — Add the vault as a git submodule
+### Step 2 - Add the vault as a git submodule
 
 Your Obsidian vault is a separate repo. Add it as a submodule so the project tracks it without merging the two histories:
 
@@ -79,7 +79,7 @@ git submodule add git@github.com:yourname/your-vault.git vault
 
 > **Warning:** Do NOT create the `vault/` folder manually before running this command. If the folder already exists, git will refuse to add the submodule. If you already created it, delete it first with `rm -rf vault/` then run the command above.
 
-### Step 3 — Create the flake files
+### Step 3 - Create the flake files
 
 Create `flake.nix` at the project root. See [flake.nix reference](#flake-reference) below for the full file.
 
@@ -91,9 +91,9 @@ channel = "stable"
 components = ["rustc", "cargo", "rust-src", "rust-analyzer", "clippy", "rustfmt"]
 ```
 
-> **Warning:** Nix uses a strict TOML parser. Values must be quoted strings. The array must be on one line. Comments inside the file can cause parse errors in some Nix versions — keep this file minimal.
+> **Warning:** Nix uses a strict TOML parser. Values must be quoted strings. The array must be on one line. Comments inside the file can cause parse errors in some Nix versions - keep this file minimal.
 
-### Step 4 — Create the .envrc for direnv
+### Step 4 - Create the .envrc for direnv
 
 ```bash
 echo "use flake" > .envrc
@@ -102,15 +102,15 @@ direnv allow
 
 After `direnv allow`, every time you `cd` into the project the dev shell activates automatically. Your terminal prompt will change and all tools become available.
 
-### Step 5 — Stage everything with git
+### Step 5 - Stage everything with git
 
-> **Warning:** Nix flakes only see files that git knows about. Untracked files are invisible to Nix — even if they exist on disk. Always run `git add` after creating new files, before running `nix develop`.
+> **Warning:** Nix flakes only see files that git knows about. Untracked files are invisible to Nix - even if they exist on disk. Always run `git add` after creating new files, before running `nix develop`.
 
 ```bash
 git add .
 ```
 
-### Step 6 — Create the Rust projects
+### Step 6 - Create the Rust projects
 
 Now that the dev shell is active, create the Rust binaries:
 
@@ -119,9 +119,9 @@ cargo new indexer
 cargo new webhook
 ```
 
-> **Warning:** If you run `cargo new` before `git init`, cargo creates its own `.git` inside the folder. This confuses git — it thinks `indexer/` is an unregistered submodule. Fix it by deleting the nested `.git`: `rm -rf indexer/.git webhook/.git`, then `git add .` again.
+> **Warning:** If you run `cargo new` before `git init`, cargo creates its own `.git` inside the folder. This confuses git - it thinks `indexer/` is an unregistered submodule. Fix it by deleting the nested `.git`: `rm -rf indexer/.git webhook/.git`, then `git add .` again.
 
-### Step 7 — Verify everything works
+### Step 7 - Verify everything works
 
 ```bash
 rustc --version    # rustc 1.x.x (stable)
@@ -161,14 +161,14 @@ Go to **Settings → Rust**:
 
 | Field | Value |
 |---|---|
-| Toolchain location | output of `which rustc`, minus the `/rustc` at the end — so just the `/bin` folder |
-| Standard library | output of the `find` command above — the full path ending in `/library` |
+| Toolchain location | output of `which rustc`, minus the `/rustc` at the end - so just the `/bin` folder |
+| Standard library | output of the `find` command above - the full path ending in `/library` |
 
 Click **Apply** then **OK**.
 
 > **Note:** These paths will change every time the Nix store hash changes (i.e. when you update nixpkgs). The direnv approach below avoids having to redo this manually.
 
-### Better approach — launch Rust Rover from the shell
+### Better approach - launch Rust Rover from the shell
 
 If you launch Rust Rover from inside the active dev shell, it inherits all paths automatically and finds the toolchain without any manual configuration:
 
@@ -259,13 +259,13 @@ Full annotated `flake.nix` for this project. Every section is explained inline.
 
 ```nix
 {
-  description = "Obsidian Publish — self-hosted Obsidian publishing platform";
+  description = "Obsidian Publish - self-hosted Obsidian publishing platform";
 
   inputs = {
-    # the main package registry — using unstable for latest versions
+    # the main package registry - using unstable for latest versions
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # cross-platform helper — handles x86_64, aarch64, darwin automatically
+    # cross-platform helper - handles x86_64, aarch64, darwin automatically
     flake-utils.url = "github:numtide/flake-utils";
 
     # gives us control over exact Rust toolchain version
@@ -283,7 +283,7 @@ Full annotated `flake.nix` for this project. Every section is explained inline.
           overlays = [ rust-overlay.overlays.default ];
         };
 
-        # reads rust-toolchain.toml — single source of truth for Rust version
+        # reads rust-toolchain.toml - single source of truth for Rust version
         rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
       in {
@@ -334,16 +334,16 @@ Full annotated `flake.nix` for this project. Every section is explained inline.
 
 ---
 
-## Flake vs Cargo — what each manages
+## Flake vs Cargo - what each manages
 
 Understanding this prevents a lot of confusion:
 
 | Tool | Manages | Where things live |
 |---|---|---|
-| Nix / flake.nix | System tools — rustc, cargo, Node, OpenSSL, SQLite | `/nix/store/...` |
-| Cargo / Cargo.toml | Rust crates — serde, rayon, rusqlite, clap | `project/target/` |
+| Nix / flake.nix | System tools - rustc, cargo, Node, OpenSSL, SQLite | `/nix/store/...` |
+| Cargo / Cargo.toml | Rust crates - serde, rayon, rusqlite, clap | `project/target/` |
 
-Cargo uses the `rustc` that Nix provides. It does not install its own compiler. When a Rust crate needs a C library (like `rusqlite` needing SQLite), Cargo finds it via the env vars that the flake sets. They don't conflict — they cooperate.
+Cargo uses the `rustc` that Nix provides. It does not install its own compiler. When a Rust crate needs a C library (like `rusqlite` needing SQLite), Cargo finds it via the env vars that the flake sets. They don't conflict - they cooperate.
 
 ---
 
