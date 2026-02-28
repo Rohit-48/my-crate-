@@ -59,7 +59,7 @@ fn split_formatter(raw: &str) -> (&str, &str) {
     ("", raw.trim())
 }
 
-// body parsing
+// embeds and wikilinks
 static LINK_RE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(!)?\[\[([^\]|]+)(?:\|[^\]]+)?\]\]").unwrap());
 fn extract_links(markdown: &str) -> (Vec<String>, Vec<String>) {
@@ -80,6 +80,7 @@ fn extract_links(markdown: &str) -> (Vec<String>, Vec<String>) {
     (wikilinks, embeds)
 }
 
+// title and tags
 fn parse_formatter(yaml_str: &str) -> (Option<String>, Vec<String>, Value) {
     let yaml: Value =
         serde_yaml::from_str(yaml_str).unwrap_or(Value::Object(serde_json::Map::new()));
@@ -104,3 +105,6 @@ fn parse_formatter(yaml_str: &str) -> (Option<String>, Vec<String>, Value) {
     }
     (title, tags, yaml) // (Option<String>, Vec<String>, Value)
 }
+
+// parsig body(content)
+
