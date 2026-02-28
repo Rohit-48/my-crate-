@@ -85,40 +85,19 @@
           # Merge all the inputs together into the shell environment
           nativeBuildInputs = nativeBuildInputs;
           buildInputs = buildInputs ++ [
-            # -----------------------------------------------------------------------
-            # RUST
-            # Our pinned toolchain from rust-toolchain.toml.
-            # Includes: cargo, rustc, rust-analyzer, clippy, rustfmt
-            # -----------------------------------------------------------------------
-            rustToolchain
-
-            # -----------------------------------------------------------------------
-            # NODE / FRONTEND
-            # Node 22 is the minimum Quartz requires, so we match that.
-            # npm comes bundled with Node on nixpkgs.
-            # -----------------------------------------------------------------------
-            pkgs.nodejs_22
-
-            # -----------------------------------------------------------------------
-            # BUN (optional but nice for running Hono fast)
-            # You can use either `node` or `bun` to run the API server.
-            # Having both gives you flexibility.
-            # -----------------------------------------------------------------------
-            pkgs.bun
-
-            # -----------------------------------------------------------------------
-            # GIT
-            # Needed explicitly because the webhook + indexer call git commands
-            # as subprocesses. Also for vault submodule management.
-            # -----------------------------------------------------------------------
-            pkgs.git
-
-            # -----------------------------------------------------------------------
-            # CARGO TOOLS (nice to have in dev)
-            # cargo-watch  → auto-recompile indexer on file changes during dev
-            # cargo-expand → useful for debugging macros (serde, clap)
-            # -----------------------------------------------------------------------
-            pkgs.cargo-watch
+            rustToolchain        # rustc, cargo, rust-analyzer, clippy, rustfmt
+            pkgs.nodejs_22       # Node 22 + npm
+            pkgs.bun             # fast JS runtime for Hono API
+            pkgs.git             # needed by indexer/webhook as subprocess
+            pkgs.pkg-config      # lets Rust find C libraries on NixOS
+            pkgs.openssl         # for HTTPS in webhook HMAC verification
+            pkgs.sqlite          # native sqlite lib for rusqlite
+            pkgs.gcc             # C compiler for rusqlite bundled sqlite
+            pkgs.cargo-watch     # auto-recompile on file changes
+            pkgs.just            # command runner for dev scripts
+            pkgs.bacon           # better error display than cargo-watch
+            pkgs.curl            # test webhook endpoints manually
+            pkgs.jq              # pretty-print JSON API responses
           ];
 
           # -----------------------------------------------------------------------
